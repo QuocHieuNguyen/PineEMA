@@ -53,9 +53,10 @@ if buy_condition
 if sell_condition
     last_sell_bar := bar_index
 
+
 // Plot BUY/SELL signals
-plotshape(buy_condition, style=shape.labelup, location=location.belowbar, color=color.green, textcolor=color.white, text="BUY", size=size.normal)
-plotshape(sell_condition, style=shape.labeldown, location=location.abovebar, color=color.red, textcolor=color.white, text="SELL", size=size.normal)
+plotshape(buy_condition, style=shape.labelup, location=location.belowbar, color=color.green, textcolor=color.white, text="BUY", size=size.tiny)
+plotshape(sell_condition, style=shape.labeldown, location=location.abovebar, color=color.red, textcolor=color.white, text="SELL", size=size.tiny)
 
 // Alert conditions
 alertcondition(buy_condition, title="BUY Signal", message="CHN BUY SELL: BUY signal")
