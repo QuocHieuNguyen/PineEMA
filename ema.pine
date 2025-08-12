@@ -1,0 +1,56 @@
+//@version=6
+indicator("RSI EMA Crossover", shorttitle="RSI EMA", overlay=true)
+
+// Input parameters
+rsi7_length = input.int(7, title="RSI 7 Length", minval=1)
+ema_long_length = input.int(200, title="EMA Long Length", minval=1)
+ema_short_length = input.int(50, title="EMA Short Length", minval=1)
+rsi7_overbought = input.int(70, title="RSI 7 Overbought Level", minval=50, maxval=100)
+rsi7_oversold = input.int(30, title="RSI 7 Oversold Level", minval=0, maxval=50)
+signal_cooldown = input.int(5, title="Signal Cooldown (candles)", minval=1, maxval=20)
+
+// Calculate RSI 7 and EMA 200
+rsi7 = ta.rsi(close, rsi7_length)
+ema200 = ta.ema(close, ema_long_length)
+ema50 = ta.ema(close, ema_short_length)
+
+// Determine candle colors based on RSI 7 only
+is_yellow_candle = rsi7 >= rsi7_overbought
+is_purple_candle = rsi7 <= rsi7_oversold
+
+// Plot colored bars instead of plotcandle for better visibility
+barcolor(is_yellow_candle ? color.yellow : is_purple_candle ? color.purple : na, title="Candle Colors")
+
+// Plot EMA 200
+plot(ema200, color=color.green, linewidth=2, title="EMA 200")
+plot(ema50, color=color.red, linewidth=2, title="EMA 50")
+
+// BUY/SELL conditions
+buy_condition_base = close > ema200 and is_yellow_candle
+sell_condition_base = close < ema200 and is_purple_candle
+
+// Signal cooldown logic
+var int last_buy_bar = 0
+var int last_sell_bar = 0
+
+buy_cooldown_ok = bar_index - last_buy_bar >= signal_cooldown
+sell_cooldown_ok = bar_index - last_sell_bar >= signal_cooldown
+
+// Final conditions with cooldown
+buy_condition = buy_condition_base and buy_cooldown_ok
+sell_condition = sell_condition_base and sell_cooldown_ok
+
+// Update last signal bar
+if buy_condition
+    last_buy_bar := bar_index
+if sell_condition
+    last_sell_bar := bar_index
+
+// Plot BUY/SELL signals
+plotshape(buy_condition, style=shape.labelup, location=location.belowbar, color=color.green, textcolor=color.white, text="BUY", size=size.normal)
+plotshape(sell_condition, style=shape.labeldown, location=location.abovebar, color=color.red, textcolor=color.white, text="SELL", size=size.normal)
+
+// Alert conditions
+alertcondition(buy_condition, title="BUY Signal", message="CHN BUY SELL: BUY signal")
+alertcondition(sell_condition, title="SELL Signal", message="CHN BUY SELL: SELL signal")
+alertcondition(buy_condition or sell_condition, title="BUY and SELL", message="CHN BUY SELL: Trading signal generated")
