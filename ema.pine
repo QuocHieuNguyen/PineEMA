@@ -2,6 +2,7 @@
 indicator("RSI EMA Crossover", shorttitle="RSI EMA", overlay=true)
 
 // Input parameters
+show_extra_ema = input.bool(false, title="Show EMA 9 & EMA 21?")
 rsi7_length = input.int(7, title="RSI 7 Length", minval=1)
 ema_long_length = input.int(200, title="EMA Long Length", minval=1)
 ema_short_length = input.int(50, title="EMA Short Length", minval=1)
@@ -14,6 +15,10 @@ rsi7 = ta.rsi(close, rsi7_length)
 ema200 = ta.ema(close, ema_long_length)
 ema50 = ta.ema(close, ema_short_length)
 
+// Extra EMAs
+ema9 = ta.ema(close, 9)
+ema21 = ta.ema(close, 21)
+
 // Determine candle colors based on RSI 7 only
 is_yellow_candle = rsi7 >= rsi7_overbought
 is_purple_candle = rsi7 <= rsi7_oversold
@@ -23,8 +28,10 @@ barcolor(is_yellow_candle ? color.yellow : is_purple_candle ? color.purple : na,
 
 // Plot EMA 200
 plot(ema200, color=color.green, linewidth=2, title="EMA 200")
-plot(ema50, color=color.red, linewidth=2, title="EMA 50")
-
+plot(show_extra_ema ?na : ema50, color=color.red, linewidth=2, title="EMA 50")
+// Conditionally plot EMA 9 & EMA 21
+plot(show_extra_ema ? ema9 : na, color=color.orange, linewidth=1, title="EMA 9")
+plot(show_extra_ema ? ema21 : na, color=color.blue, linewidth=1, title="EMA 21")
 // BUY/SELL conditions
 buy_condition_base = close > ema200 and is_yellow_candle
 sell_condition_base = close < ema200 and is_purple_candle
