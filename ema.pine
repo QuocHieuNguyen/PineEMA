@@ -27,8 +27,8 @@ is_purple_candle = rsi7 <= rsi7_oversold
 barcolor(is_yellow_candle ? color.yellow : is_purple_candle ? color.purple : na, title="Candle Colors")
 
 // Plot EMA 200
-plot(ema200, color=color.green, linewidth=2, title="EMA 200")
-plot(show_extra_ema ?na : ema50, color=color.red, linewidth=2, title="EMA 50")
+plot(show_extra_ema ?na :ema200, color=color.green, linewidth=1, title="EMA 200")
+plot(show_extra_ema ?na : ema50, color=color.red, linewidth=1, title="EMA 50")
 // Conditionally plot EMA 9 & EMA 21
 plot(show_extra_ema ? ema9 : na, color=color.orange, linewidth=1, title="EMA 9")
 plot(show_extra_ema ? ema21 : na, color=color.blue, linewidth=1, title="EMA 21")
